@@ -77,7 +77,7 @@ void setup() {
     PcInt::attachInterrupt(pinMacro3, pinMacro3Changed, CHANGE);
 
     pinMode(pinModifier, INPUT);
-    attachInterrupt(digitalPinToInterrupt(pinModifier), modifier, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(pinModifier), pinModifierChanged, CHANGE);
 
     // Sends a clean report to the host. This is important on any Arduino type.
     // Need booth Keyboard and Consumer since they are not capable of sending eachother keycode
@@ -157,7 +157,7 @@ void pinMacro3Changed(bool new_state) {
 }
 
 
-void modifier() {
+void pinModifierChanged() {
     static uint32_t last_press = 0;
 
     if(digitalRead(pinModifier) && millis() - last_press > DEBOUNCE_TIME) {
