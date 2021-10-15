@@ -1,4 +1,5 @@
 #include <HID-Project.h>
+#define FASTLED_INTERNAL
 #include <FastLED.h>
 #include <Encoder.h>
 
@@ -27,7 +28,7 @@ void setup() {
     Keyboard.begin();
     Consumer.begin();
 
-    FastLED.addLeds<WS2811, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+    FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
     FastLED.show();
 
