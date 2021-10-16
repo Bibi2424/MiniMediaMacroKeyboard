@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <EEPROM.h>
+
 #include "nvm.h"
 #include "shortcuts.h"
 

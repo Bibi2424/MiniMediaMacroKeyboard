@@ -1,7 +1,10 @@
 #include <Arduino.h>
 #include <YetAnotherPcInt.h>
 #include <HID-Project.h>
+#define FASTLED_INTERNAL
 #include <FastLED.h>
+
+#include "effect_engine.h"
 #include "button_action.h"
 #include "shortcuts.h"
 #include "nvm.h"
@@ -129,8 +132,10 @@ static void pinMacro3Changed(bool new_state) {
     static uint32_t last_press = 0;
     if(modifier_pressed == false) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
-            run_shortcut(UNDO, nvm_config.os);
-            Serial.println("UNDO");
+            // run_shortcut(UNDO, nvm_config.os);
+            // Serial.println("UNDO");
+            run_shortcut(ZOOM_MUTE, nvm_config.os);
+            Serial.println("ZOOM_MUTE");
         }
     }
     last_press = millis();
@@ -139,18 +144,22 @@ static void pinMacro3Changed(bool new_state) {
 
 static void pinModifierChanged() {
     static uint32_t last_press = 0;
+    static effect_t modifier_effect = {.type = EFFECT_SOLID, .color = {0, 0, 255}};
 
     if(digitalRead(pinModifier) && millis() - last_press > DEBOUNCE_TIME) {
         modifier_pressed = true;
-        for(uint8_t i = 0; i < NUM_LEDS; i++) {
-            leds[i] = CRGB::Blue;
-        }
-        FastLED.setBrightness(  128 );
-        FastLED.show();
+        effect_engine_start(modifier_effect, true);
+        // for(uint8_t i = 0; i < NUM_LEDS; i++) {
+        //     leds[i] = CRGB::Blue;
+        // }
+        // FastLED.setBrightness(  128 );
+        // FastLED.show();
     }
     else {
         modifier_pressed = false;
-        FastLED.setBrightness(50);
+        effect_t no_effect = {.type = EFFECT_NONE};
+        effect_engine_start(no_effect, true);
+        // FastLED.setBrightness(50);
     }
 
     last_press = millis();
