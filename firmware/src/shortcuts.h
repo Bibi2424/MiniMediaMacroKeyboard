@@ -8,9 +8,8 @@
 
 typedef enum {
     COPY = 0,
-    PASTE,
-    UNDO,
-    ZOOM_MUTE    
+    PASTE = 1,
+    UNDO = 2
 } shortcut_t;
 
 

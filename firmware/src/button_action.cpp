@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <YetAnotherPcInt.h>
 #include <HID-Project.h>
-#define FASTLED_INTERNAL
 #include <FastLED.h>
 #include "button_action.h"
 #include "shortcuts.h"
@@ -130,8 +129,8 @@ static void pinMacro3Changed(bool new_state) {
     static uint32_t last_press = 0;
     if(modifier_pressed == false) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
-            run_shortcut(ZOOM_MUTE, nvm_config.os);
-            Serial.println("ZOOM_MUTE");
+            run_shortcut(UNDO, nvm_config.os);
+            Serial.println("UNDO");
         }
     }
     last_press = millis();

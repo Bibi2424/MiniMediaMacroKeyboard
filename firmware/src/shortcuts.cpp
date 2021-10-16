@@ -23,11 +23,5 @@ extern void run_shortcut(shortcut_t shortcut, bool os) {
             Keyboard.write('z');
             Keyboard.releaseAll();
         break;
-        case ZOOM_MUTE:
-            Keyboard.press(os ? KEY_LEFT_CTRL: KEY_LEFT_GUI);
-            Keyboard.press(KEY_LEFT_SHIFT);
-            Keyboard.write('a');
-            Keyboard.releaseAll();
-        break;
     }
 }
