@@ -13,15 +13,28 @@
 Encoder myEnc(3, 2);
 
 
-void setup() {
+void startup_animation(void) {
+    effect_t startup = {.type = EFFECT_PULSE, {.pulse = {.rgb = { 0, 0, 0 }, .t_step = 32}}, .duration_ms = 2000};
+
+    if (nvm_config.os == WINDOWS) { startup.pulse.rgb[2] = 128; }
+    else { startup.pulse.rgb[1] = 128; }
+
+    effect_engine_start(startup, EFFECT_FOREGROUND);
+}
+
+
+void setup(void) {
     Serial.begin(115200);
 
     nvm_read(nvm_config);
 
     button_init();
     effect_engine_init();
-    effect_t back_effect = {.type = EFFECT_HUE_PROGRESS, .color = {0}, .duration = 0};
-    effect_engine_start(back_effect, false);
+
+    startup_animation();
+
+    effect_t back = {.type = EFFECT_RAINBOW, {.rainbow = {.brightness = 128, .progression = 4, .offset = 16}}};
+    effect_engine_start(back, EFFECT_BACKGROUND);
 
     // Sends a clean report to the host. This is important on any Arduino type.
     // Need both Keyboard and Consumer since they are not capable of sending eachother keycode
@@ -32,7 +45,7 @@ void setup() {
 }
 
 
-void loop() {
+void loop(void) {
     uint32_t current_time = millis();
 
     static long oldPosition  = 0;

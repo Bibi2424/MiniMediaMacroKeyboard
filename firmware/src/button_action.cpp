@@ -12,10 +12,6 @@
 
 #define DEBOUNCE_TIME      100
 
-//! TEMP
-#define NUM_LEDS 12
-extern CRGB leds[];
-
 
 const int pinPlay = 16;
 const int pinNext = 10;
@@ -56,6 +52,13 @@ extern void button_init(void) {
 }
 
 
+static void play_press_effect(uint8_t *rgb, uint16_t duration = 300) {
+    effect_t pressed = {.type = EFFECT_PULSE, {.pulse = {.rgb = { 0, 0, 0 }, .t_step = 32}}, .duration_ms = duration};
+    memcpy(&pressed.pulse.rgb, rgb, sizeof(uint8_t[3]));
+    effect_engine_start(pressed, EFFECT_FOREGROUND);
+}
+
+
 extern bool is_modifier_pressed(void) {
 	return modifier_pressed;
 }
@@ -67,6 +70,8 @@ static void pinPlayChanged(bool new_state) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
             Consumer.write(MEDIA_PLAY_PAUSE);
             Serial.println("Play");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     last_press = millis();
@@ -79,6 +84,8 @@ static void pinNextChanged(bool new_state) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
             Consumer.write(MEDIA_NEXT);
             Serial.println("Next");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     last_press = millis();
@@ -91,6 +98,8 @@ static void pinMuteChanged(bool new_state) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
             Consumer.write(MEDIA_VOLUME_MUTE);
             Serial.println("Mute");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     last_press = millis();
@@ -103,6 +112,8 @@ static void pinMacro1Changed(bool new_state) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
             run_shortcut(COPY, nvm_config.os);
             Serial.println("Copy");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     else {
@@ -110,6 +121,10 @@ static void pinMacro1Changed(bool new_state) {
             nvm_config.os = !nvm_config.os;
             nvm_write(nvm_config);
             Serial.println("OS");
+            uint8_t rgb[3] = {0, 0, 0};
+            if(nvm_config.os == WINDOWS) { rgb[2] = 128; }
+            else { rgb[1] = 128; }
+            play_press_effect(rgb, 600);
         }
     }
     last_press = millis();
@@ -122,6 +137,8 @@ static void pinMacro2Changed(bool new_state) {
         if(new_state == 0 && millis() - last_press > DEBOUNCE_TIME) {
             run_shortcut(PASTE, nvm_config.os);
             Serial.println("Paste");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     last_press = millis();
@@ -136,6 +153,8 @@ static void pinMacro3Changed(bool new_state) {
             // Serial.println("UNDO");
             run_shortcut(ZOOM_MUTE, nvm_config.os);
             Serial.println("ZOOM_MUTE");
+            uint8_t rgb[3] = {0, 128, 0};
+            play_press_effect(rgb);
         }
     }
     last_press = millis();
@@ -144,22 +163,15 @@ static void pinMacro3Changed(bool new_state) {
 
 static void pinModifierChanged() {
     static uint32_t last_press = 0;
-    static effect_t modifier_effect = {.type = EFFECT_SOLID, .color = {0, 0, 255}};
 
     if(digitalRead(pinModifier) && millis() - last_press > DEBOUNCE_TIME) {
         modifier_pressed = true;
-        effect_engine_start(modifier_effect, true);
-        // for(uint8_t i = 0; i < NUM_LEDS; i++) {
-        //     leds[i] = CRGB::Blue;
-        // }
-        // FastLED.setBrightness(  128 );
-        // FastLED.show();
+        effect_t modifier_effect = {.type = EFFECT_SOLID, {.solid = {.rgb = {16, 16, 16}}}};
+        effect_engine_start(modifier_effect, EFFECT_MIDDLE);
     }
     else {
         modifier_pressed = false;
-        effect_t no_effect = {.type = EFFECT_NONE};
-        effect_engine_start(no_effect, true);
-        // FastLED.setBrightness(50);
+        effect_engine_stop(EFFECT_MIDDLE);
     }
 
     last_press = millis();
